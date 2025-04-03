@@ -1,0 +1,156 @@
+# Apache configuration file
+# Enable URL rewriting
+RewriteEngine On
+
+# Set base directory
+RewriteBase /
+
+# Prevent directory listing
+Options -Indexes
+
+# Set default character set
+AddDefaultCharset UTF-8
+
+# Set default timezone (adjust as needed)
+php_value date.timezone "UTC"
+
+# Security Headers
+<IfModule mod_headers.c>
+    # Protect against clickjacking
+    Header set X-Frame-Options "SAMEORIGIN"
+    
+    # Protect against XSS attacks
+    Header set X-XSS-Protection "1; mode=block"
+    
+    # Prevent MIME-type sniffing
+    Header set X-Content-Type-Options "nosniff"
+    
+    # Enable HSTS (uncomment in production with SSL)
+    # Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    
+    # Restrict referrer information
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Content Security Policy
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://code.jquery.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self'"
+</IfModule>
+
+# Protect sensitive files
+<FilesMatch "^(\.env|config\.php|composer\.json|composer\.lock|\.(git|svn|htaccess))">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Protect configuration directory
+<DirectoryMatch "^/.*/config/">
+    Order Allow,Deny
+    Deny from all
+</DirectoryMatch>
+
+# Disable script execution in uploads directory
+<DirectoryMatch "^/.*/uploads/">
+    Options -ExecCGI
+    RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8
+    RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8
+    php_flag engine off
+</DirectoryMatch>
+
+# Protect against common exploits
+<IfModule mod_rewrite.c>
+    # Block access to hidden files and directories
+    RewriteCond %{SCRIPT_FILENAME} -d [OR]
+    RewriteCond %{SCRIPT_FILENAME} -f
+    RewriteRule "(^|/)\." - [F]
+
+    # Block access to backup and source files
+    RewriteRule \.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist|orig|bak|conf)$ - [F]
+
+    # Block access to composer files
+    RewriteRule (composer\.json|composer\.lock|package\.json|package-lock\.json)$ - [F]
+
+    # Prevent direct access to PHP files in specific directories
+    RewriteRule ^(cron|tests|config)/.+\.php$ - [F]
+</IfModule>
+
+# Enable compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+# Enable caching
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Images
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    
+    # CSS, JavaScript
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    
+    # Others
+    ExpiresByType application/pdf "access plus 1 month"
+    ExpiresByType application/x-shockwave-flash "access plus 1 month"
+</IfModule>
+
+# PHP configuration
+<IfModule mod_php.c>
+    # Maximum execution time
+    php_value max_execution_time 300
+    
+    # Maximum input time
+    php_value max_input_time 300
+    
+    # Memory limit
+    php_value memory_limit 256M
+    
+    # Maximum file upload size
+    php_value upload_max_filesize 5M
+    php_value post_max_size 6M
+    
+    # Maximum input variables
+    php_value max_input_vars 3000
+    
+    # Session configuration
+    php_value session.cookie_httponly 1
+    php_value session.use_only_cookies 1
+    php_value session.cookie_secure 1
+    
+    # Error reporting (disable in production)
+    php_flag display_errors Off
+    php_flag display_startup_errors Off
+    php_value error_reporting E_ALL & ~E_DEPRECATED & ~E_STRICT
+</IfModule>
+
+# Custom error pages
+ErrorDocument 400 /error.php?code=400
+ErrorDocument 401 /error.php?code=401
+ErrorDocument 403 /error.php?code=403
+ErrorDocument 404 /error.php?code=404
+ErrorDocument 500 /error.php?code=500
+
+# Prevent access to system files
+<FilesMatch "^(phpinfo\.php|info\.php|test\.php|readme\.(html|md)|readme\.txt|license\.(html|md|txt)|changelog\.(html|md|txt))$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Force HTTPS (uncomment in production)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
