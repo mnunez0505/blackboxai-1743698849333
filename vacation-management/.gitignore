@@ -1,0 +1,117 @@
+# Configuration files
+config.php
+.env
+
+# Logs and databases
+/logs/*
+!logs/.gitkeep
+*.log
+*.sql
+*.sqlite
+
+# Cache and temporary files
+/cache/*
+!cache/.gitkeep
+*.cache
+*.tmp
+
+# Uploads directory
+/uploads/*
+!uploads/.gitkeep
+
+# Composer
+/vendor/
+composer.lock
+
+# Node modules (if used in future)
+node_modules/
+package-lock.json
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Environment specific files
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+
+# Test files
+/phpunit.xml
+.phpunit.result.cache
+
+# Build files
+/build/
+/dist/
+
+# Backup files
+*.bak
+*.backup
+*.[0-9]
+
+# System specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Keep these files
+!.gitignore
+!.htaccess
+!database/schema.sql
+
+# Application specific
+/cron/*.lock
+/sessions/*
+!sessions/.gitkeep
+
+# Security related
+*.pem
+*.key
+*.crt
+*.csr
+*.cer
+
+# Dependency directories
+/bower_components/
+
+# Local development files
+*.local.php
+*LOCAL.php
+*DEV.php
+
+# Debug files
+debug.log
+error_log
+php_errors.log
+
+# Keep empty directories
+!.gitkeep
+
+# WhatsApp API credentials
+whatsapp_credentials.json
+
+# Backup directories
+/backup/
+/backups/
+
+# Test coverage reports
+/coverage/
+/reports/
+
+# Documentation (if generated)
+/docs/build/
+/docs/api/
+
+# Custom ignore files per environment
+.gitignore.*
